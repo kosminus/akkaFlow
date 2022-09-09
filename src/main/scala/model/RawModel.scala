@@ -1,3 +1,3 @@
 package model
 
-case class RawModel(data:String) extends MySerializable
+case class RawModel[T](data:T) extends MySerializable

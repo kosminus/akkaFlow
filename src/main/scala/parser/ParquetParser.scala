@@ -14,18 +14,18 @@ import model.RawModel
 
 import scala.concurrent.Future
 
-class ParquetParser extends Parser[RawModel] {
-  def parse (file: String) = {
+class ParquetParser extends Parser[RawModel[GenericRecord]] {
+  def parse (file: String): Future[List[RawModel[GenericRecord]]] = {
     val conf: Configuration = new Configuration()
-     val rawModelFlow = Flow[GenericRecord].map(line=>RawModel(line.toString))
+     val rawModelFlow = Flow[GenericRecord].map(line=>RawModel(line))
      conf.setBoolean(AvroReadSupport.AVRO_COMPATIBILITY, true)
     val reader: ParquetReader[GenericRecord] =
       AvroParquetReader.builder[GenericRecord](HadoopInputFile.fromPath(new Path(file), conf)).withConf(conf).build()
 
     val source = AvroParquetSource(reader)
-     val result: Future[List[RawModel]]=
-       source.via(rawModelFlow)
-         .runWith(Sink.collection[RawModel, List[RawModel]])
+     val result: Future[List[RawModel[GenericRecord]]]=
+       source.via(rawModelFlow).async
+         .runWith(Sink.collection[RawModel[GenericRecord], List[RawModel[GenericRecord]]])
      result
   }
 

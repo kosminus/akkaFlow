@@ -8,7 +8,7 @@ import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.{FileIO, Framing, Sink, Source}
 import akka.util.{ByteString, Timeout}
 import model.Domain.{GetInputFiles, Initialize, ProcessFile, ProcessLine}
-import parser.{Parser, TextParser}
+import parser.{Parser, TextParser, actorSystem}
 
 import java.io.File
 import java.nio.file.Paths
@@ -62,7 +62,10 @@ class Master extends Actor with ActorLogging  {
 
   def handleJob(): Receive = {
     case ProcessFile(filename) => {
-      val aggregator = context.actorOf(Props[Aggregator], "aggregator")
+      val aggregator = context.actorOf(Props[Aggregator], s"aggregator${filename.split("/").last}")
+
+
+      //val aggregator = context.actorOf(Props[Aggregator], "aggregator")
       // scala.io.Source.fromFile(filename).getLines().foreach { line =>
 //       val line = Source(1 to 100).runForeach(line=>
 //       self ! ProcessLine(line.toString , aggregator ))
@@ -72,11 +75,11 @@ class Master extends Actor with ActorLogging  {
       val parser = Parser(filename)
       parser.parse(filename).onComplete{
         case Success(rawmodelList) =>
-          rawmodelList.foreach(rawModel=>
-            self ! ProcessLine(rawModel,aggregator))
+          rawmodelList.foreach(line =>
+            self ! ProcessLine(line.data,aggregator))
         case Failure(exception) => exception.printStackTrace()
-      }
 
+      }
 
     }
 

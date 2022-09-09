@@ -26,5 +26,7 @@ libraryDependencies ++= Seq(
   "com.lightbend.akka" %% "akka-stream-alpakka-avroparquet" % "3.0.4",
   "org.apache.hadoop" % "hadoop-common" % hadoopVersion,
   "org.apache.hadoop" % "hadoop-mapreduce-client-core" % hadoopVersion,
-  "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.13.4"
+  "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.13.4",
+  "com.google.protobuf" % "protobuf-java" % "3.9.2",
+  "com.github.romix.akka" %% "akka-kryo-serialization" % "0.5.2"
 )

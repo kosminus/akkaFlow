@@ -6,7 +6,7 @@ import model.Domain.ProcessLineResult
 import scala.concurrent.duration.{Duration, DurationInt}
 
 class Aggregator extends Actor with ActorLogging {
-  context.setReceiveTimeout(3 seconds)
+  context.setReceiveTimeout(10 seconds)
 
   override def receive: Receive = online(0)
 
